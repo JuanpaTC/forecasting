@@ -1,8 +1,9 @@
 import pandas as pd
 
-################################################################################
-# IMPORTANTE: AUN NO SE TRATAN LOS PRODUCTOS QUE TIENEN STOCK INICIAL NEGATIVO #
-################################################################################
+#################################################################################
+#  CLEME Y JP, los DF con los que pueden trabajar son items, sales y purchases  #
+#################################################################################
+
 
 ########################### DATA_ITEMS ###########################
 
@@ -24,8 +25,6 @@ items.loc[:, 'group_description'] = items['group_description'].replace({'medicam
 
 format_error = ['unit_sale_price (CLP)', 'cost (CLP)', 'storage_cost (CLP)', 'stock', 'cost_per_purchase']
 items[format_error] = items[format_error].astype(int)
-
-#print(f"% datos perdidos:{1 - items['item_id'].count()/data_items['item_id'].count()}") #cerca del 12.8%
 
 ########################### DATA_PURCHASES ###########################
 
@@ -50,8 +49,6 @@ purchases['delivery_date'] = pd.to_datetime(purchases['delivery_date'], format='
 
 purchases['delivery_time (days)'] = (purchases['delivery_date'] - purchases['date']).dt.days
 
-#print(f"% datos perdidos:{1 - purchases['item_id'].count()/data_purchases['item_id'].count()}") #cerca del 34.7%
-
 ########################### DATA_SALES ###########################
 
 '''
@@ -69,11 +66,29 @@ sales[format_error] = sales[format_error].astype(int)
 
 sales['date'] = pd.to_datetime(sales['date'], format='%Y-%m-%d')
 
-
-#print(f"% datos perdidos:{1 - sales['item_id'].count()/data_sales['item_id'].count()}") #cerca del 71%
 #items['Suma'] = items['size_m3'] * items['stock'] #Para ver el stock del archivo items
 #print(items['Suma'].sum())
 
+sales['date'] = pd.to_datetime(sales['date']) # productos descontinuados
+cutoff_date = pd.Timestamp('2022-10-04')
+last_sale_dates = sales.groupby('item_id')['date'].max()
+discontinued_items = last_sale_dates[last_sale_dates < cutoff_date]
+discontinued_item_ids = discontinued_items.index
+discontinued_products = items[items['item_id'].isin(discontinued_item_ids)]
+#print(discontinued_products)
+
+items['descontinuado'] = 0
+items.loc[items['item_id'].isin(discontinued_item_ids), 'descontinuado'] = 1
+
+
+items = items[items['descontinuado'] == 0]
+sales = sales[sales['item_id'].isin(items['item_id'])]
+purchases = purchases[purchases['item_id'].isin(items['item_id'])]
+
+
+#print(f"% datos perdidos:{1 - items['item_id'].count()/data_items['item_id'].count()}") # 0.17647058823529416
+#print(f"% datos perdidos:{1 - purchases['item_id'].count()/data_purchases['item_id'].count()}") # 0.36868986424146566
+#print(f"% datos perdidos:{1 - sales['item_id'].count()/data_sales['item_id'].count()}") # 0.7204518863551072
 
 #############################################################################
 #                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
@@ -81,11 +96,17 @@ sales['date'] = pd.to_datetime(sales['date'], format='%Y-%m-%d')
 
 '''
     (1) clasificar la demanda, en el dataframe de 'items' crear columnas con los nombres: 
-        [frecuencia, estacionalidad, tendencia, intermitente, descontinuado]
+        [frecuencia, estacionalidad, tendencia, intermitente]
         La idea es rellenar con numeros 1, 0 o -1 (de ser el caso), 
         los criterios para cada caracteristica los defines tú (trata de tenerlos anotados)
 
-    (2) Solo en caso de tener tiempo (cuando termines el resto de arreglos de los archivos, 
+    (2) Tratar los productos que tienen stock inicial negativo
+
+    (3)
+
+    (4) Solo en caso de tener tiempo (cuando termines el resto de arreglos de los archivos, 
         enfocate en esto), buscar la forma de reducir el nº de observaciones perdidas en todas las tablas
         (items, sales y purchases) sobre todo en las dos últimas
 '''
+
+

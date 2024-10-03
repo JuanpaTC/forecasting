@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from clean_data import items, purchases, sales
-
+'''
 # Las ventas disminuyen el stock
 purchases['quantity'] = purchases['quantity'].astype(int)
 sales['quantity'] = -sales['quantity'].astype(int)
@@ -14,7 +14,7 @@ events = pd.concat([events_purchases, events_sales]).sort_values(by=['item_id', 
 
 # Rehacer el stock por cada item_id
 stock_evolution = []
-'''
+
 for item in items['item_id'].unique():
     # Filtrar eventos para cada item
     item_events = events[events['item_id'] == item].copy()
@@ -56,6 +56,38 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 '''
+########################## Producto de prueba 1 ##########################
+
+test_item = sales.groupby('item_id')['quantity'].sum().idxmax()
+########################################################################
+
+item_name = items[items['item_id'] == test_item]['description'].iloc[0] # nombre item
+test_item_sales = sales[sales['item_id'] == test_item].copy()           # copia de la info
+test_item_sales = test_item_sales.sort_values(by='date')
+test_item_sales = test_item_sales.set_index('date').resample('W').sum()
+
+plt.figure(figsize=(10, 6))
+plt.plot(test_item_sales.index, test_item_sales['quantity'], label='Ventas reales')
+plt.title(f"Ventas y Forecasting Dinámico usando Media Móvil - Item ID: {test_item}: {item_name}")
+plt.xlabel('Fecha')
+plt.ylabel('Cantidad vendida')
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+#plt.show()
+
+
+########################## Producto de prueba ##########################
+
+sales['date'] = pd.to_datetime(sales['date'])
+cutoff_date = pd.Timestamp('2023-03-04')
+last_sale_dates = sales.groupby('item_id')['date'].max()
+discontinued_items = last_sale_dates[last_sale_dates < cutoff_date]
+discontinued_item_ids = discontinued_items.index
+discontinued_products = items[items['item_id'].isin(discontinued_item_ids)]
+print(discontinued_products)
+
 
 #############################################################################
 #                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
