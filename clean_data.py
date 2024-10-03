@@ -73,3 +73,19 @@ sales['date'] = pd.to_datetime(sales['date'], format='%Y-%m-%d')
 #print(f"% datos perdidos:{1 - sales['item_id'].count()/data_sales['item_id'].count()}") #cerca del 71%
 #items['Suma'] = items['size_m3'] * items['stock'] #Para ver el stock del archivo items
 #print(items['Suma'].sum())
+
+
+#############################################################################
+#                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
+#############################################################################
+
+'''
+    (1) clasificar la demanda, en el dataframe de 'items' crear columnas con los nombres: 
+        [frecuencia, estacionalidad, tendencia, intermitente, descontinuado]
+        La idea es rellenar con numeros 1, 0 o -1 (de ser el caso), 
+        los criterios para cada caracteristica los defines tú (trata de tenerlos anotados)
+
+    (2) Solo en caso de tener tiempo (cuando termines el resto de arreglos de los archivos, 
+        enfocate en esto), buscar la forma de reducir el nº de observaciones perdidas en todas las tablas
+        (items, sales y purchases) sobre todo en las dos últimas
+'''
