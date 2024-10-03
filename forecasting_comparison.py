@@ -11,6 +11,18 @@ from forecasting_sarima import forecast_SARIMA
 ################################################
 
 
+#############################################################################
+#                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
+#############################################################################
+
+'''
+    Revisar las metricas, cualquier duda pregúntame, trata de hacer un print para que se vea como una tabla. 
+    Incluír las que dijo el profe.
+    Se agregan 2 metodos más, Gaussiano y Poisson (pero yo aun sigo trabajando en elos asi que solo mencionalos).
+'''
+
+
+
 def percentage_bias(y_true, y_pred):
     return 100 * np.sum(y_pred - y_true) / np.sum(y_true)
 
@@ -60,3 +72,4 @@ print("\n")
 #print(forecast_mean)
 #print(forecast_SARIMA)
 #print(forecast_ETS)
+

@@ -55,4 +55,14 @@ plt.grid(True)
 plt.xticks(rotation=45)
 plt.legend()
 plt.tight_layout()
-plt.show()
+#plt.show()
+
+#############################################################################
+#                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
+#############################################################################
+
+'''
+    Encontrar productos con demandas distintas (tratar de que sean lo más diversas posibles).
+    Trata de tener un gráfico de cada producto, identificalo con ID y nombre.
+
+'''
