@@ -14,7 +14,7 @@ events = pd.concat([events_purchases, events_sales]).sort_values(by=['item_id', 
 
 # Rehacer el stock por cada item_id
 stock_evolution = []
-
+'''
 for item in items['item_id'].unique():
     # Filtrar eventos para cada item
     item_events = events[events['item_id'] == item].copy()
@@ -41,13 +41,12 @@ final_stock_evolution = pd.concat(stock_evolution)
 item_to_plot_1 = 561 #wanpy soft duck jerky stripos
 stock_data_561 = final_stock_evolution[final_stock_evolution['item_id'] == item_to_plot_1]
 item_to_plot_2 = 700 #tx 2 pelotas yute catnip
-stock_data_88 = final_stock_evolution[final_stock_evolution['item_id'] == item_to_plot_2]
-
+stock_data_700 = final_stock_evolution[final_stock_evolution['item_id'] == item_to_plot_2]
 
 
 plt.figure(figsize=(10, 6))
 plt.plot(stock_data_561['date'], stock_data_561['stock'], marker='o', color='b', markersize=2, label=f'Item {item_to_plot_1}')
-plt.plot(stock_data_88['date'], stock_data_88['stock'], marker='o', color='b', markersize=2, label=f'Item {item_to_plot_2}')
+plt.plot(stock_data_700['date'], stock_data_700['stock'], marker='o', color='b', markersize=2, label=f'Item {item_to_plot_2}')
 plt.title(f'Evolución del Stock -')
 plt.xlabel('Fecha')
 plt.ylabel('Stock')
@@ -55,7 +54,8 @@ plt.grid(True)
 plt.xticks(rotation=45)
 plt.legend()
 plt.tight_layout()
-#plt.show()
+plt.show()
+'''
 
 #############################################################################
 #                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
