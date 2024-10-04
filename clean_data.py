@@ -90,6 +90,12 @@ purchases = purchases[purchases['item_id'].isin(items['item_id'])]
 #print(f"% datos perdidos:{1 - purchases['item_id'].count()/data_purchases['item_id'].count()}") # 0.36868986424146566
 #print(f"% datos perdidos:{1 - sales['item_id'].count()/data_sales['item_id'].count()}") # 0.7204518863551072
 
+# 
+discontinued_with_stock = items[(items['descontinuado'] == 1) & (items['stock'] != 0)]
+num_discontinued_with_stock = discontinued_with_stock.shape[0]
+print(f"Cantidad de productos descontinuados que aún ocupan espacio en bodega: {num_discontinued_with_stock}")
+
+
 #############################################################################
 #                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
 #############################################################################

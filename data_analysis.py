@@ -56,9 +56,11 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 '''
+
 ########################## Producto de prueba 1 ##########################
 
 test_item = sales.groupby('item_id')['quantity'].sum().idxmax()
+
 ########################################################################
 
 item_name = items[items['item_id'] == test_item]['description'].iloc[0] # nombre item
@@ -77,7 +79,6 @@ plt.grid(True)
 plt.tight_layout()
 #plt.show()
 
-
 ########################## Producto de prueba ##########################
 
 sales['date'] = pd.to_datetime(sales['date'])
@@ -88,7 +89,6 @@ discontinued_item_ids = discontinued_items.index
 discontinued_products = items[items['item_id'].isin(discontinued_item_ids)]
 print(discontinued_products)
 
-
 #############################################################################
 #                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
 #############################################################################
@@ -96,5 +96,4 @@ print(discontinued_products)
 '''
     Encontrar productos con demandas distintas (tratar de que sean lo más diversas posibles).
     Trata de tener un gráfico de cada producto, identificalo con ID y nombre.
-
 '''
