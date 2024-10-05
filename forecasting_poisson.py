@@ -62,6 +62,13 @@ prediccion_futura['time_sin_interaction'] = prediccion_futura['time'] * predicci
 X_future = sm.add_constant(prediccion_futura[['time', 'time_squared', 'sin_time', 'cos_time', 'time_sin_interaction']])
 y_pred = poisson_model.predict(X_future)
 
+forecast_poisson = pd.DataFrame({
+    'date': fechas_futuras,
+    'forecast': y_pred
+})
+
+forecast_P = forecast_poisson.copy()
+
 # Graficar resultados
 plt.figure(figsize=(10, 6))
 plt.plot(test_item_sales.index, test_item_sales['quantity'], label='Ventas reales (históricas)', color='blue')
