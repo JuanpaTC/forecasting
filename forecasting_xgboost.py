@@ -32,10 +32,9 @@ real_item_sales = real_item_sales[real_item_sales['date'] >= '2023-03-15'].copy(
 test_item_sales['month'] = test_item_sales['date'].dt.month
 test_item_sales['year'] = test_item_sales['date'].dt.year
 test_item_sales['week_of_year'] = test_item_sales['date'].dt.isocalendar().week.astype(int)  # Convertir a entero
-test_item_sales['trend'] = np.arange(len(test_item_sales))  # Tendencia temporal
 
 # Definir características (X) y target (y)
-X = test_item_sales[['month', 'year', 'week_of_year', 'trend']]
+X = test_item_sales[['month', 'year', 'week_of_year']]
 y = test_item_sales['quantity']
 
 # Separar los datos en conjunto de entrenamiento y prueba
@@ -62,11 +61,10 @@ fechas_futuras_df = pd.DataFrame({
     'month': fechas_futuras.month,
     'year': fechas_futuras.year,
     'week_of_year': fechas_futuras.isocalendar().week.astype(int),  # Convertir a entero
-    'trend': np.arange(len(test_item_sales), len(test_item_sales) + len(fechas_futuras))  # Tendencia futura
 })
 
 # Pronosticar las cantidades futuras
-forecast_xgb = xgb_model.predict(fechas_futuras_df[['month', 'year', 'week_of_year', 'trend']])
+forecast_xgb = xgb_model.predict(fechas_futuras_df[['month', 'year', 'week_of_year']])
 forecast_XGB = pd.DataFrame({'date': fechas_futuras, 'forecast': forecast_xgb})
 
 #print(real_item_sales)

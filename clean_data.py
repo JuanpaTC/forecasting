@@ -18,8 +18,10 @@ data_items = pd.read_csv('data_items.csv', delimiter=',')
 
 descartados = data_items[(data_items['size_m3'] == 0) | (data_items['size_m3'].isna()) | 
                          (data_items['storage_cost (CLP)'].isna()) | 
-                         (data_items['cost_per_purchase'].isna())]['item_id'].tolist() 
+                         (data_items['cost_per_purchase'].isna())]['item_id'].tolist()
 items = data_items[~data_items['item_id'].isin(descartados)].copy()
+#print(descartados)
+print(data_items[data_items['item_id'].isin(descartados)].copy()) ##### REVISAR
 
 items.loc[:, 'group_description'] = items['group_description'].replace({'medicamentos': 'medicamento', 'accesorios': 'accesorio'})
 
@@ -89,11 +91,6 @@ purchases = purchases[purchases['item_id'].isin(items['item_id'])]
 #print(f"% datos perdidos:{1 - items['item_id'].count()/data_items['item_id'].count()}") # 0.17647058823529416
 #print(f"% datos perdidos:{1 - purchases['item_id'].count()/data_purchases['item_id'].count()}") # 0.36868986424146566
 #print(f"% datos perdidos:{1 - sales['item_id'].count()/data_sales['item_id'].count()}") # 0.7204518863551072
-
-# 
-discontinued_with_stock = items[(items['descontinuado'] == 1) & (items['stock'] != 0)]
-num_discontinued_with_stock = discontinued_with_stock.shape[0]
-print(f"Cantidad de productos descontinuados que aún ocupan espacio en bodega: {num_discontinued_with_stock}")
 
 
 #############################################################################

@@ -5,6 +5,9 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ExpSineSquared, ConstantKernel as C
 from clean_data import items, sales
 
+seed = 28
+np.random.seed(seed)
+
 ########################## Producto de prueba ##########################
 
 test_item = sales.groupby('item_id')['quantity'].sum().idxmax()  # item más vendido... por ahora se probará con ese
@@ -56,6 +59,7 @@ X_train = np.array((test_item_sales.index - test_item_sales.index[0]).days).resh
 y_train = test_item_sales['quantity'].values  # Ventas históricas
 
 # Definir el kernel: RBF para variaciones suaves y ExpSineSquared para la periodicidad
+
 kernel = C(1.0, (1e-4, 1e1)) * RBF(length_scale=30.0, length_scale_bounds=(1e-2, 1e2)) \
          + C(1.0, (1e-4, 1e1)) * ExpSineSquared(length_scale=30.0, periodicity=12.0, length_scale_bounds=(1e-2, 1e2))
 
@@ -78,6 +82,8 @@ forecast_gp = pd.DataFrame({
     'lower_bound': y_pred - 1.96 * sigma,  # Intervalo de confianza del 95%
     'upper_bound': y_pred + 1.96 * sigma
 })
+
+forecast_GP = forecast_gp.copy()
 
 # Graficar las ventas reales, predicciones y el intervalo de confianza
 plt.figure(figsize=(10, 6))

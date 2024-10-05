@@ -45,7 +45,7 @@ if result[1] > 0.05:                                                    # si no 
 sarima_model = SARIMAX(test_item_sales['quantity'],                     # definir y ajustar el modelo SARIMA con los mejores parámetros encontrados
                         order=(1, 0, 2),  
                        seasonal_order=(2, 2, 2, 12))
-sarima_fit = sarima_model.fit(disp=False)
+sarima_fit = sarima_model.fit(disp=False) ##### VER VALORES DEL FIT
 
 forecast_steps = 52                                                     # generar pronóstico para prox. 12 meses
 forecast = sarima_fit.get_forecast(steps=forecast_steps)                # se hace la asignación a un frame
