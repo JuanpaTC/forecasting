@@ -112,4 +112,65 @@ purchases = purchases[purchases['item_id'].isin(items['item_id'])]
         (items, sales y purchases) sobre todo en las dos últimas
 '''
 
+sales_per_item = sales.groupby('item_id')['date'].count()
+total_periods = sales['date'].nunique()  # Total de períodos únicos (días/meses)
+
+alta_frecuencia_threshold = 0.7 * total_periods
+baja_frecuencia_threshold = 0.3 * total_periods
+
+items['frecuencia'] = sales_per_item.apply(
+    lambda x: 1 if x >= alta_frecuencia_threshold else (-1 if x <= baja_frecuencia_threshold else 0))
+
+# Paso 1: Buscar productos con estacionalidad
+sales['month'] = pd.to_datetime(sales['date']).dt.month
+monthly_sales = sales.groupby(['item_id', 'month'])['unit_sale_price (CLP)'].sum().unstack(fill_value=0)
+
+items['estacionalidad'] = monthly_sales.apply(lambda row: 1 if row.max() >= 2 * row.mean() else 0, axis=1)
+
+# Paso 2: Tratar productos con stock inicial negativo
+# Creamos la columna 'tendencia' basada en los datos de stock inicial
+items['tendencia'] = items['stock'].apply(lambda x: 1 if x > 0 else 0)
+
+# Paso 3: Definir si es intermitente
+# Un producto es intermitente si tiene más de un 50% de períodos sin ventas, pero en los días que tiene ventas, estas son significativas
+zero_sales_per_item = total_periods - sales_per_item  # Número de períodos sin ventas
+items['intermitente'] = zero_sales_per_item.apply(lambda x: 1 if x > 0.5 * total_periods else 0)
+
+# Mostrar el DataFrame con las nuevas columnas
+print(items[['frecuencia', 'estacionalidad', 'tendencia', 'intermitente']])
+
+# Guardar el nuevo DataFrame con las columnas adicionales
+items.to_csv('items_with_forecasting_features.csv', index=False)
+
+# Extraer los primeros 5 productos de cada tipo de demanda basados en las columnas que hemos creado
+alta_frecuencia = items[items['frecuencia'] == 1].head(5)
+baja_frecuencia = items[items['frecuencia'] == -1].head(5)
+continua = items[items['frecuencia'] == 0].head(5)
+intermitente = items[items['intermitente'] == 1].head(5)
+estacional = items[items['estacionalidad'] == 1].head(5)
+
+# Guardar los nombres de los primeros 5 productos de cada tipo
+tipos_de_demanda = {
+    'Alta Frecuencia': alta_frecuencia['item_id'].tolist(),
+    'Baja Frecuencia': baja_frecuencia['item_id'].tolist(),
+    'Continua': continua['item_id'].tolist(),
+    'Intermitente': intermitente['item_id'].tolist(),
+    'Estacional': estacional['item_id'].tolist()
+}
+
+print(tipos_de_demanda)
+
+baja_frecuencia_items = items[items['item_id'].isin([1701, 275, 416, 1655, 247])]
+continua_items = items[items['item_id'].isin([203, 1592, 208, 973, 845])]
+intermitente_items = items[items['item_id'].isin([1701, 275, 416, 1655, 247])]
+estacional_items = items[items['item_id'].isin([1701, 275, 416, 247, 383])]
+
+productos_encontrados = {
+    'Baja Frecuencia': baja_frecuencia_items[['item_id', 'description']].to_dict(orient='records'),
+    'Continua': continua_items[['item_id', 'description']].to_dict(orient='records'),
+    'Intermitente': intermitente_items[['item_id', 'description']].to_dict(orient='records'),
+    'Estacional': estacional_items[['item_id', 'description']].to_dict(orient='records')
+}
+
+print(productos_encontrados)
 
