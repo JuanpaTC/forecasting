@@ -66,7 +66,7 @@ for i in range(len(test_item_sales), len(historico_y_pred)):
 forecast_mean = historico_y_pred[historico_y_pred['date'] > ultima_fecha][['date', 'media movil']].copy()
 forecast_mean.columns = ['date', 'forecast']  # Renombrar las columnas
 
-#print(forecast_mean)
+print(forecast_mean)
 
 # grafico: ventas reales, media móvil y predicciones
 plt.figure(figsize=(10, 6))

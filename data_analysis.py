@@ -75,25 +75,35 @@ plt.xlabel('Fecha')
 plt.ylabel('Cantidad vendida')
 plt.legend()
 plt.xticks(rotation=45)
-plt.grid(True)
-plt.tight_layout()
+#plt.grid(True)
+#plt.tight_layout()
 #plt.show()
 
-########################## Producto de prueba ##########################
+########################## Producto de prueba ??? ##########################
+test_item = 1185
 
-sales['date'] = pd.to_datetime(sales['date'])
-cutoff_date = pd.Timestamp('2023-03-04')
-last_sale_dates = sales.groupby('item_id')['date'].max()
-discontinued_items = last_sale_dates[last_sale_dates < cutoff_date]
-discontinued_item_ids = discontinued_items.index
-discontinued_products = items[items['item_id'].isin(discontinued_item_ids)]
-print(discontinued_products)
+item_name = items[items['item_id'] == test_item]['description'].iloc[0] # nombre item
+test_item_sales = sales[sales['item_id'] == test_item].copy()           # copia de la info
+test_item_sales = test_item_sales.sort_values(by='date')
+test_item_sales = test_item_sales.set_index('date').resample('W').sum()
+
+plt.figure(figsize=(10, 6))
+plt.plot(test_item_sales.index, test_item_sales['quantity'], label='Ventas reales')
+plt.title(f"Item ID: {test_item}: {item_name}")
+plt.xlabel('Fecha')
+plt.ylabel('Cantidad vendida')
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
 #############################################################################
 #                  CHECHO, EMPIEZA A TRABAJAR DESDE AQUÍ                    #
 #############################################################################
 
-'''
-    Encontrar productos con demandas distintas (tratar de que sean lo más diversas posibles).
-    Trata de tener un gráfico de cada producto, identificalo con ID y nombre.
-'''
+copia = pd.read_csv('ej.csv', delimiter=',')
+print(copia)
+print(copia[copia['quantity']>= 500])
+
+

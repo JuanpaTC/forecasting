@@ -21,7 +21,7 @@ descartados = data_items[(data_items['size_m3'] == 0) | (data_items['size_m3'].i
                          (data_items['cost_per_purchase'].isna())]['item_id'].tolist()
 items = data_items[~data_items['item_id'].isin(descartados)].copy()
 #print(descartados)
-print(data_items[data_items['item_id'].isin(descartados)].copy()) ##### REVISAR
+#print(data_items[data_items['item_id'].isin(descartados)].copy()) ##### REVISAR
 
 items.loc[:, 'group_description'] = items['group_description'].replace({'medicamentos': 'medicamento', 'accesorios': 'accesorio'})
 
@@ -113,20 +113,21 @@ purchases = purchases[purchases['item_id'].isin(items['item_id'])]
 '''
 
 sales_per_item = sales.groupby('item_id')['date'].count()
+
 total_periods = sales['date'].nunique()  # Total de períodos únicos (días/meses)
 
-alta_frecuencia_threshold = 0.7 * total_periods
+alta_frecuencia_threshold = 0.7 * total_periods # por qué 30% y 70%
 baja_frecuencia_threshold = 0.3 * total_periods
 
 items['frecuencia'] = sales_per_item.apply(
     lambda x: 1 if x >= alta_frecuencia_threshold else (-1 if x <= baja_frecuencia_threshold else 0))
 
-# Paso 1: Buscar productos con estacionalidad
+# Paso 1: Buscar productos con estacionalidad -----> mensual???? REVISAR NO ES CONFIABLE
 sales['month'] = pd.to_datetime(sales['date']).dt.month
 monthly_sales = sales.groupby(['item_id', 'month'])['unit_sale_price (CLP)'].sum().unstack(fill_value=0)
 
 items['estacionalidad'] = monthly_sales.apply(lambda row: 1 if row.max() >= 2 * row.mean() else 0, axis=1)
-
+#print(items[items['estacionalidad']==1])
 # Paso 2: Tratar productos con stock inicial negativo
 # Creamos la columna 'tendencia' basada en los datos de stock inicial
 items['tendencia'] = items['stock'].apply(lambda x: 1 if x > 0 else 0)
@@ -137,7 +138,7 @@ zero_sales_per_item = total_periods - sales_per_item  # Número de períodos sin
 items['intermitente'] = zero_sales_per_item.apply(lambda x: 1 if x > 0.5 * total_periods else 0)
 
 # Mostrar el DataFrame con las nuevas columnas
-print(items[['frecuencia', 'estacionalidad', 'tendencia', 'intermitente']])
+#print(items[['frecuencia', 'estacionalidad', 'tendencia', 'intermitente']])
 
 # Guardar el nuevo DataFrame con las columnas adicionales
 items.to_csv('items_with_forecasting_features.csv', index=False)
@@ -158,7 +159,7 @@ tipos_de_demanda = {
     'Estacional': estacional['item_id'].tolist()
 }
 
-print(tipos_de_demanda)
+#print(tipos_de_demanda)
 
 baja_frecuencia_items = items[items['item_id'].isin([1701, 275, 416, 1655, 247])]
 continua_items = items[items['item_id'].isin([203, 1592, 208, 973, 845])]
@@ -172,5 +173,5 @@ productos_encontrados = {
     'Estacional': estacional_items[['item_id', 'description']].to_dict(orient='records')
 }
 
-print(productos_encontrados)
+#print(productos_encontrados)
 
